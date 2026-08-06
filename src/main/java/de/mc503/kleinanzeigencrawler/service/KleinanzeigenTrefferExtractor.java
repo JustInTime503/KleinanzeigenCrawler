@@ -25,6 +25,9 @@ public class KleinanzeigenTrefferExtractor {
         Elements articles = doc.getElementsByTag("article");
         for (Element article : articles) {
             Treffer treffer = new Treffer();
+            if (gesuch.getNurVersand()) {
+                treffer.setIsVersand(!article.getElementsByClass("tag-with-icon").text().isEmpty()); // direkt kaufen geht nicht ohne versand
+            }
             Elements titleElement = article.getElementsByClass("text-module-begin");
             treffer.setName(titleElement.text());
             String einstellDatumText = article.getElementsByClass("aditem-main--top--right").text();

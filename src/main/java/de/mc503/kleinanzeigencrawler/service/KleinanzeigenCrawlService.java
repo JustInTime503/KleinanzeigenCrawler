@@ -28,9 +28,6 @@ public class KleinanzeigenCrawlService {
         StringBuilder url = new StringBuilder();
         url.append("https://www.kleinanzeigen.de/");
         if (gesuch.getPreisVon() != null || gesuch.getPreisBis() != null) {
-            if (gesuch.getNurVersand()) {
-                url.append("s-versand:ja/");
-            }
             appendPreisVonBis(gesuch, url);
             url.append(gesuch.getSuchbegriff().replace(' ', '-'));
             url.append("/");

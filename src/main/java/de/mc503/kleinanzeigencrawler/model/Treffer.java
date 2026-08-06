@@ -14,6 +14,7 @@ public class Treffer {
     private LocalTime einstellungsZeit;
     private LocalDate einstellungsDatum;
     private String href;
+    private Boolean isVersand;
 
     @Override
     public boolean equals(Object o) {

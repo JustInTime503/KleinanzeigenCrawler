@@ -3,7 +3,6 @@ package de.mc503.kleinanzeigencrawler.service;
 import de.mc503.kleinanzeigencrawler.model.Gesuch;
 import de.mc503.kleinanzeigencrawler.model.Treffer;
 import de.mc503.kleinanzeigencrawler.service.mail.MailSenderService;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -31,7 +30,7 @@ public class KleinanzeigenService {
         log.info("Found {} listings", treffers.size());
         for (Treffer treffer : treffers) {
             if (!treffersSentLinksFor.contains(treffer)) {
-                mailSenderService.sendMail(treffer.getPreis() + ": " + treffer.getName() + " : " + treffer.getHref(), treffer.getHref());
+                mailSenderService.sendMail(treffer.getPreis() + ": " + treffer.getName(), treffer.getHref(), gesuch.getMail());
                 treffersSentLinksFor.add(treffer);
             }
         }

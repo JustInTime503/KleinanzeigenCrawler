@@ -66,6 +66,7 @@ public class KleinanzeigenTrefferExtractor {
     private List<Treffer> filterTreffer(List<Treffer> trefferList, Gesuch gesuch) {
         return trefferList.stream()
                 .filter(treffer -> containsAny(gesuch.getTrefferBegriffe(), treffer.getName()))
+                .filter(treffer -> !containsAny(gesuch.getBlacklist(), treffer.getName()))
                 .filter(treffer -> !treffer.getName().toLowerCase().contains("leerkarton")
                         && !treffer.getName().toLowerCase().contains("nur verpackung")
                         && !treffer.getName().toLowerCase().contains("nur karton")

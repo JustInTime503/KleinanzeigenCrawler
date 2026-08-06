@@ -16,7 +16,11 @@ public class Gesuch {
     private List<Zustand> zustaende = new ArrayList<Zustand>();
     private Integer preisVon;
     private Integer preisBis;
-    private List<String> trefferBegriffe;
+    private List<String> trefferBegriffe = new ArrayList<>();
+    private List<String> blacklist = new ArrayList<>();
+    private Boolean nurVersand = false;
 
     private List<String> foundHrefs;
+
+    private String mail;
 }

@@ -22,10 +22,15 @@ public class KleinanzeigenCrawlService {
         return null;
     }
 
+    // example url with all current values
+    //  https://www.kleinanzeigen.de/s-versand:ja/preis:10:100/rtx-4070/k0+global.zustand:new%2Cok
     public String buildUrl(Gesuch gesuch) {
         StringBuilder url = new StringBuilder();
         url.append("https://www.kleinanzeigen.de/");
         if (gesuch.getPreisVon() != null || gesuch.getPreisBis() != null) {
+            if (gesuch.getNurVersand()) {
+                url.append("s-versand:ja/");
+            }
             appendPreisVonBis(gesuch, url);
             url.append(gesuch.getSuchbegriff().replace(' ', '-'));
             url.append("/");

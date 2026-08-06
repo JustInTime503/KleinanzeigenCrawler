@@ -24,20 +24,20 @@ public class MailSenderService {
 
     private final List<MailQueueItem> queueItems = new ArrayList<>();
 
-    public void sendMail(String subject, String msg) {
+    public void sendMail(String subject, String msg, String mail) {
         log.info("Adding mail to queue: {}", subject);
-        queueItems.add(new MailQueueItem(subject, msg));
+        queueItems.add(new MailQueueItem(subject, msg, mail));
     }
 
     @Scheduled(fixedRate = 3000, timeUnit = TimeUnit.MILLISECONDS)
     private void sendNextMail() {
         if (!queueItems.isEmpty()) {
             MailQueueItem mailQueueItem = queueItems.remove(0);
-            internalSendMail(mailQueueItem.getSubject(), mailQueueItem.getMessage());
+            internalSendMail(mailQueueItem);
         }
     }
 
-    private void internalSendMail(String subject, String msg) {
+    private void internalSendMail(MailQueueItem mailQueueItem) {
         try {
             Properties prop = new Properties();
             prop.put("mail.smtp.auth", true);
@@ -54,11 +54,11 @@ public class MailSenderService {
 
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("justin503.trahe@gmail.com"));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("mc503.kleincrawl@gmail.com"));
-            message.setSubject(subject);
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mailQueueItem.getMail()));
+            message.setSubject(mailQueueItem.getSubject());
 
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
-            mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+            mimeBodyPart.setContent(mailQueueItem.getMessage(), "text/html; charset=utf-8");
 
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(mimeBodyPart);
@@ -66,16 +66,17 @@ public class MailSenderService {
             message.setContent(multipart);
 
             Transport.send(message);
-            log.info("Mail sent successfully: {}", subject);
+            log.info("Mail sent successfully: {}", mailQueueItem.getSubject());
         }  catch (Exception e) {
-            log.error("Error sending mail: {}", subject, e);
+            log.error("Error sending mail: {}", mailQueueItem.getSubject(), e);
         }
     }
 
     @AllArgsConstructor
     @Getter
-    private class MailQueueItem {
+    private static class MailQueueItem {
         private String subject;
         private String message;
+        private String mail;
     }
 }

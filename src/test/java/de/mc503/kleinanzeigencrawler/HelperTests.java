@@ -18,17 +18,17 @@ import java.util.List;
 @SpringBootTest
 public class HelperTests {
 
-//    @Autowired
-//    private KleinanzeigenJob kleinanzeigenJob;
-//
-//    @Test
-//    public void helperTest() {
+    @Autowired
+    private KleinanzeigenJob kleinanzeigenJob;
+
+    @Test
+    public void helperTest() {
 //        KleinanzeigenCrawlService crawlService = new KleinanzeigenCrawlService();
-//
+
 //        Gesuch gesuch = new Gesuch();
 //        gesuch.setSuchbegriff("5600x");
 //        gesuch.setPreisVon(50);
-//        gesuch.setPreisBis(90);
+//        gesuch.setPreisBis(1000);
 //        gesuch.setTrefferBegriffe(new ArrayList<>(List.of("5600x")));
 //        gesuch.setZustaende(new ArrayList<>(List.of(Zustand.NEU, Zustand.GUT, Zustand.IN_ORDNUNG, Zustand.SEHR_GUT)));
 //        gesuch.setBlacklist(new ArrayList<>(List.of("leerkarton", "leer", "nur verpackung", "leerverpackung")));
@@ -36,10 +36,10 @@ public class HelperTests {
 //        gesuch.setNurVersand(true);
 //        Document result = crawlService.kleinanzeigenCrawl(gesuch);
 //        new KleinanzeigenTrefferExtractor().extractTreffer(result, gesuch);
-//    }
-//
-//    @Test
-//    public void kleinanzeigenTrefferTest() {
-//        kleinanzeigenJob.run();
-//    }
+    }
+
+    @Test
+    public void kleinanzeigenTrefferTest() {
+        kleinanzeigenJob.run();
+    }
 }

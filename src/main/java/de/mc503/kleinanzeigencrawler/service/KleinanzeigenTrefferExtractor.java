@@ -25,12 +25,10 @@ public class KleinanzeigenTrefferExtractor {
         Elements articles = doc.getElementsByTag("article");
         for (Element article : articles) {
             Treffer treffer = new Treffer();
-            if (gesuch.getNurVersand()) {
-                treffer.setIsVersand(!article.getElementsByClass("tag-with-icon").text().isEmpty()); // direkt kaufen geht nicht ohne versand
-            }
-            Elements titleElement = article.getElementsByClass("text-module-begin");
-            treffer.setName(titleElement.text());
             String einstellDatumText = article.getElementsByClass("aditem-main--top--right").text();
+            if (einstellDatumText.isEmpty()) {
+                continue; // skipp the ones without upload date - thats the "TOP" ones
+            }
             String[] split = einstellDatumText.split(", ");
             if (einstellDatumText.startsWith("Heute")) {
                 treffer.setHeuteEingestellt(true);
@@ -45,6 +43,11 @@ public class KleinanzeigenTrefferExtractor {
                 treffer.setEinstellungsZeit(null);
                 treffer.setEinstellungsDatum(LocalDate.parse(split[0].trim(), DATE_TIME_FORMATTER));
             }
+            if (gesuch.getNurVersand()) {
+                treffer.setIsVersand(!article.getElementsByClass("tag-with-icon").text().isEmpty()); // direkt kaufen geht nicht ohne versand
+            }
+            Elements titleElement = article.getElementsByClass("text-module-begin");
+            treffer.setName(titleElement.text());
             treffer.setHref("https://www.kleinanzeigen.de" + article.attr("data-href"));
             trefferListe.add(treffer);
             String currentPriceText = article.getElementsByClass("aditem-main--middle--price-shipping--price").text();
@@ -70,6 +73,11 @@ public class KleinanzeigenTrefferExtractor {
         return trefferList.stream()
                 .filter(treffer -> containsAny(gesuch.getTrefferBegriffe(), treffer.getName()))
                 .filter(treffer -> !containsAny(gesuch.getBlacklist(), treffer.getName()))
+                .filter(treffer -> {
+                    if (gesuch.getNurVersand()) {
+                        return treffer.getIsVersand();
+                    } else return true;
+                })
                 .filter(treffer -> !treffer.getName().toLowerCase().contains("leerkarton")
                         && !treffer.getName().toLowerCase().contains("nur verpackung")
                         && !treffer.getName().toLowerCase().contains("nur karton")

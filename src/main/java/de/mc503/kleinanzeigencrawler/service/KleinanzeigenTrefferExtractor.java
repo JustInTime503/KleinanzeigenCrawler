@@ -25,9 +25,17 @@ public class KleinanzeigenTrefferExtractor {
         Elements articles = doc.getElementsByTag("article");
         for (Element article : articles) {
             Treffer treffer = new Treffer();
-            String einstellDatumText = article.getElementsByClass("aditem-main--top--right").text();
-            if (einstellDatumText.isEmpty()) {
-                continue; // skipp the ones without upload date - thats the "TOP" ones
+            String einstellDatumText = null;
+            Element calendar = article.select("svg[data-title=calendarOutline]").first();
+            if (calendar != null) {
+                Element dateElement = calendar.parent().select("span").first();
+                if (dateElement != null) {
+                    einstellDatumText = dateElement.text();
+                } else {
+                    continue;
+                }
+            } else {
+                continue;
             }
             String[] split = einstellDatumText.split(", ");
             if (einstellDatumText.startsWith("Heute")) {
@@ -46,23 +54,29 @@ public class KleinanzeigenTrefferExtractor {
             if (gesuch.getNurVersand()) {
                 treffer.setIsVersand(!article.getElementsByClass("tag-with-icon").text().isEmpty()); // direkt kaufen geht nicht ohne versand
             }
-            Elements titleElement = article.getElementsByClass("text-module-begin");
-            treffer.setName(titleElement.text());
+            Element titelElement = article.select("h3 a").first();
+            if (titelElement != null) {
+                String titelString = titelElement.text();
+                treffer.setName(titelString);
+            }
             treffer.setHref("https://www.kleinanzeigen.de" + article.attr("data-href"));
             trefferListe.add(treffer);
-            String currentPriceText = article.getElementsByClass("aditem-main--middle--price-shipping--price").text();
-            if (currentPriceText.endsWith("VB")) {
-                treffer.setPreisIstVb(true);
-                treffer.setPreis(Integer.parseInt(currentPriceText.split(" € ")[0]));
-            } else if (currentPriceText.startsWith("Zu verschenk")) {
-                treffer.setPreisIstVb(false);
-                treffer.setPreis(0);
-            } else {
-                treffer.setPreisIstVb(false);
-                try {
-                    treffer.setPreis(Integer.parseInt(currentPriceText.substring(0, currentPriceText.length() - 2)));
-                } catch (NumberFormatException e) {
-                    log.error("{}\n{} :\n{}", e.getMessage(), treffer.getName(), treffer.getHref());
+            Element preisElement = article.select("p.text-title3.font-strong").first();
+            if (preisElement != null) {
+                String preis = preisElement.text();
+                if (preis.endsWith("VB")) {
+                    treffer.setPreisIstVb(true);
+                    treffer.setPreis(Integer.parseInt(preis.split(" € ")[0]));
+                } else if (preis.startsWith("Zu verschenk")) {
+                    treffer.setPreisIstVb(false);
+                    treffer.setPreis(0);
+                } else {
+                    treffer.setPreisIstVb(false);
+                    try {
+                        treffer.setPreis(Integer.parseInt(preis.substring(0, preis.length() - 2)));
+                    } catch (NumberFormatException e) {
+                        log.error("{}\n{} :\n{}", e.getMessage(), treffer.getName(), treffer.getHref());
+                    }
                 }
             }
         }

@@ -33,8 +33,6 @@ public class KleinanzeigenCrawlService {
             url.append("/");
             url.append("k0");
             appendZustaende(gesuch, url);
-
-
         }
         return url.toString();
     }

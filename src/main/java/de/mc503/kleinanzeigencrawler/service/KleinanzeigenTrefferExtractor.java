@@ -51,9 +51,12 @@ public class KleinanzeigenTrefferExtractor {
                 treffer.setEinstellungsZeit(null);
                 treffer.setEinstellungsDatum(LocalDate.parse(split[0].trim(), DATE_TIME_FORMATTER));
             }
-            if (gesuch.getNurVersand()) {
-                treffer.setIsVersand(!article.getElementsByClass("tag-with-icon").text().isEmpty()); // direkt kaufen geht nicht ohne versand
-            }
+
+            boolean versandMoeglich = article.select("span[data-dhl-promotion]")
+                    .stream()
+                    .anyMatch(e -> e.text().equals("Versand möglich"));
+            treffer.setIsVersand(versandMoeglich); // direkt kaufen geht nicht ohne versand
+
             Element titelElement = article.select("h3 a").first();
             if (titelElement != null) {
                 String titelString = titelElement.text();

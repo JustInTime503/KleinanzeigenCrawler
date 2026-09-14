@@ -58,9 +58,16 @@ public class KleinanzeigenTrefferExtractor {
             treffer.setIsVersand(versandMoeglich); // direkt kaufen geht nicht ohne versand
 
             Element titelElement = article.select("h3 a").first();
+            if (titelElement == null) {
+                titelElement = article.select("h3 span[name]").first();
+            }
             if (titelElement != null) {
                 String titelString = titelElement.text();
                 treffer.setName(titelString);
+            }
+            if (treffer.getName() == null) {
+                log.error("Could not find name for article {}", article.attr("data-href"));
+                continue;
             }
             treffer.setHref("https://www.kleinanzeigen.de" + article.attr("data-href"));
             trefferListe.add(treffer);

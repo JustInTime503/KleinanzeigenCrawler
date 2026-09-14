@@ -57,10 +57,7 @@ public class KleinanzeigenTrefferExtractor {
                     .anyMatch(e -> e.text().equals("Versand möglich"));
             treffer.setIsVersand(versandMoeglich); // direkt kaufen geht nicht ohne versand
 
-            Element titelElement = article.select("h3 a").first();
-            if (titelElement == null) {
-                titelElement = article.select("h3 span[name]").first();
-            }
+            Element titelElement = article.select("h3").first();
             if (titelElement != null) {
                 String titelString = titelElement.text();
                 treffer.setName(titelString);
